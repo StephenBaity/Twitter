@@ -6,6 +6,7 @@
 //  Copyright © 2020 Dan. All rights reserved.
 //
 
+
 import UIKit
 
 class HomeTableTableViewController: UITableViewController {
@@ -46,9 +47,10 @@ class HomeTableTableViewController: UITableViewController {
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetCellTableViewCell
 		
-		
-		cell.usernameLabel.text = user["name"] as? String
+		let user = tweetArray[indexPath.row]["user"] as? NSDictionary
 		cell.tweetContentLabel.text = tweetArray[indexPath.row]["text"] as? String
+		cell.usernameLabel.text = user?["name"] as? String
+		
 		
 		return cell
 	}

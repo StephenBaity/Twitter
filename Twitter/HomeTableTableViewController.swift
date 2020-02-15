@@ -27,8 +27,10 @@ class HomeTableTableViewController: UITableViewController {
 	
 	@objc func loadTweets () {
 		
+		numberOfTweets = 20
+		
 		let url = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-		let params = ["count": 20]
+		let params = ["count": numberOfTweets]
 		TwitterAPICaller.client?.getDictionariesRequest(url: url, parameters: params, success: { (tweets : [NSDictionary]) in
 			
 			self.tweetArray.removeAll()
@@ -43,7 +45,34 @@ class HomeTableTableViewController: UITableViewController {
 			print("Could not retrieve tweet")
 		})
 	}
-	 
+	
+	func loadMoreTweets () {
+		let myurl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+		 numberOfTweets += 20
+		let params = ["count": numberOfTweets]
+		TwitterAPICaller.client?.getDictionariesRequest(url: myurl, parameters: params, success: { (tweets : [NSDictionary]) in
+			
+			self.tweetArray.removeAll()
+			for tweet in tweets {
+				self.tweetArray.append(tweet)
+			}
+			
+			self.tableView.reloadData()
+			self.myRefreshControl.endRefreshing()
+			
+		}, failure: { (Error) in
+			print("Could not retrieve tweet")
+		})
+	}
+	
+	
+	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+		if indexPath.row + 1 == tweetArray.count {
+			loadMoreTweets()
+		}
+	}
+		
+
 	@IBAction func onLogout(_ sender: Any) {
 		TwitterAPICaller.client?.logout()
 		self.dismiss(animated: true, completion: nil)
@@ -64,7 +93,6 @@ class HomeTableTableViewController: UITableViewController {
 			cell.profileImageView.image = UIImage(data: imageData)
 		}
 		
-		
 		return cell
 	}
 	
@@ -79,16 +107,6 @@ class HomeTableTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
 		return tweetArray.count
     }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
 
     /*
     // Override to support conditional editing of the table view.
